@@ -12,17 +12,20 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask counterLayerMask;
 
     private bool isWalking = false;
+    private ClearCounter selectedCounter;
     private void Start() {
         gameInput.OnInteractAction += GameInput_OnInteractAction;
     }
 
     private void GameInput_OnInteractAction(object sender, System.EventArgs e)
     {
-        HandleInteraction();
+        // HandleInteraction();
+        selectedCounter?.Interact();
     }
 
     private void Update()
     {        
+        HandleInteraction();
     }
 
     private void FixedUpdate()
@@ -58,9 +61,29 @@ public class Player : MonoBehaviour
         {
             if (hitinfo.transform.TryGetComponent<ClearCounter>(out ClearCounter counter))
             {
-                counter.Interact();
+                // counter.Interact();
+                SetSelectedCounter(counter);
+            }
+            else
+            {
+                SetSelectedCounter(null);
             }
         }
+        else
+        {
+            SetSelectedCounter(null);
+        }
 
+    }
+
+    public void SetSelectedCounter(ClearCounter counter)
+    {
+        if(counter != selectedCounter)
+        {
+            selectedCounter?.CancelSelected();
+            counter?.SelectedCounter();
+
+            this.selectedCounter = counter;
+        }        
     }
 }
